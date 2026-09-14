@@ -1,0 +1,1291 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>家长端 - 孩子在校反馈</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%232f6fed'/%3E%3Ctext x='32' y='43' font-size='34' text-anchor='middle' fill='white'%3E%E5%AE%B6%3C/text%3E%3C/svg%3E">
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    margin: 0;
+    font-family: "PingFang SC", "Microsoft YaHei", "Hiragino Sans GB", Arial, sans-serif;
+    background: #eef2f7;
+    color: #26323f;
+    line-height: 1.55;
+  }
+
+  .app {
+    max-width: 520px;
+    margin: 0 auto;
+    min-height: 100vh;
+    background: #f6f8fb;
+    box-shadow: 0 0 24px rgba(25, 45, 70, 0.08);
+  }
+
+  .header {
+    background: linear-gradient(135deg, #2563eb, #4f8cff);
+    color: #fff;
+    padding: 18px 18px 50px;
+  }
+
+  .header .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .brand-mark {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 19px;
+  }
+
+  .header h1 {
+    margin: 0;
+    font-size: 18px;
+  }
+
+  .header p {
+    margin: 3px 0 0;
+    font-size: 12px;
+    opacity: 0.9;
+  }
+
+  .content {
+    padding: 0 14px 24px;
+    margin-top: -34px;
+  }
+
+  .card {
+    background: #fff;
+    border: 1px solid #e3e9f2;
+    border-radius: 14px;
+    box-shadow: 0 3px 12px rgba(26, 48, 80, 0.06);
+    padding: 14px;
+    margin-bottom: 12px;
+  }
+
+  .child-select {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 3px;
+    scrollbar-width: none;
+  }
+
+  .child-select::-webkit-scrollbar { display: none; }
+
+  .child-btn {
+    flex-shrink: 0;
+    border: 1px solid #d9e2ee;
+    background: #fff;
+    color: #43536a;
+    border-radius: 999px;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-family: inherit;
+    cursor: pointer;
+  }
+
+  .child-btn.active {
+    background: #2563eb;
+    border-color: #2563eb;
+    color: #fff;
+  }
+
+  .sync-note {
+    margin-top: 10px;
+    padding: 8px 10px;
+    border-radius: 9px;
+    font-size: 12px;
+    color: #1d4ed8;
+    background: #eef4ff;
+    border: 1px solid #d6e4ff;
+  }
+
+  .sync-note.off {
+    color: #64748b;
+    background: #f6f8fb;
+    border-color: #e4e9f1;
+  }
+
+  .summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+    color: #54657a;
+    padding-top: 2px;
+  }
+
+  .summary b { color: #1e40af; font-size: 15px; }
+
+  .filter-row {
+    display: flex;
+    gap: 7px;
+    overflow-x: auto;
+    padding-bottom: 2px;
+    margin-bottom: 2px;
+    scrollbar-width: none;
+  }
+
+  .filter-row::-webkit-scrollbar { display: none; }
+
+  .filter-chip {
+    flex-shrink: 0;
+    border: 1px solid #d9e2ee;
+    background: #fff;
+    color: #5b6a7d;
+    border-radius: 8px;
+    padding: 6px 11px;
+    font-size: 13px;
+    font-family: inherit;
+    cursor: pointer;
+  }
+
+  .filter-chip.active {
+    border-color: #2563eb;
+    background: #eef4ff;
+    color: #1d4ed8;
+  }
+
+  .record {
+    border-left: 4px solid #2f6fed;
+    border-radius: 10px;
+    padding: 12px 12px 10px;
+    margin-bottom: 10px;
+    background: #fff;
+    border-top: 1px solid #eef2f8;
+    border-right: 1px solid #eef2f8;
+    border-bottom: 1px solid #eef2f8;
+  }
+
+  .record.unread {
+    background: #fffdf7;
+    border-left-color: #f59e0b;
+  }
+
+  .record-top {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .record-top .date {
+    font-size: 12px;
+    color: #8493a6;
+    margin-left: auto;
+  }
+
+  .tag {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: #eef2f7;
+    color: #516174;
+  }
+
+  .tag.course {
+    background: #eef4ff;
+    color: #1d4ed8;
+  }
+
+  .record-content {
+    margin-top: 8px;
+    font-size: 14px;
+    color: #334155;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  .record-source {
+    font-size: 12px;
+    color: #8493a6;
+    margin-top: 4px;
+  }
+
+  .unread-dot {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #f59e0b;
+    margin-right: 4px;
+    vertical-align: 1px;
+  }
+
+  .actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 9px;
+    padding-top: 9px;
+    border-top: 1px dashed #e5ebf3;
+  }
+
+  .btn {
+    border: none;
+    border-radius: 8px;
+    padding: 7px 12px;
+    font-size: 13px;
+    font-family: inherit;
+    cursor: pointer;
+  }
+
+  .btn.primary {
+    background: #2563eb;
+    color: #fff;
+  }
+
+  .btn.ghost {
+    background: #f1f5f9;
+    color: #43536a;
+  }
+
+  .btn.done {
+    background: #eefdf3;
+    color: #15803d;
+  }
+
+  .reply-box {
+    margin-top: 10px;
+  }
+
+  .reply-box textarea {
+    width: 100%;
+    min-height: 70px;
+    border: 1px solid #d9e2ee;
+    border-radius: 10px;
+    padding: 9px 10px;
+    font-family: inherit;
+    font-size: 14px;
+    resize: vertical;
+    outline: none;
+    background: #fff;
+  }
+
+  .reply-box .send-row {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 7px;
+  }
+
+  .reply-item {
+    margin-top: 8px;
+    background: #f0f7ff;
+    border-radius: 8px;
+    padding: 8px 10px;
+    font-size: 13px;
+  }
+
+  .reply-item .time {
+    font-size: 11px;
+    color: #8493a6;
+    margin-top: 2px;
+  }
+
+  .empty {
+    text-align: center;
+    color: #8493a6;
+    padding: 34px 16px;
+    font-size: 14px;
+  }
+
+  .foot {
+    text-align: center;
+    color: #9aa8ba;
+    font-size: 11px;
+    padding: 4px 14px 22px;
+  }
+
+  /* ===== 顶部视图切换 ===== */
+  .seg {
+    display: flex;
+    background: #e7edf6;
+    border-radius: 11px;
+    padding: 4px;
+    margin-bottom: 10px;
+  }
+  .seg button {
+    flex: 1;
+    border: none;
+    background: transparent;
+    padding: 9px 8px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: inherit;
+    color: #62748a;
+    cursor: pointer;
+  }
+  .seg button.active {
+    background: #fff;
+    color: #1d4ed8;
+    font-weight: 600;
+    box-shadow: 0 1px 4px rgba(30, 60, 100, 0.12);
+  }
+  .dim-title { font-size: 14px; font-weight: 600; margin: 2px 0 8px; }
+  .week-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .week-nav { display: flex; align-items: center; gap: 8px; }
+  .week-nav button {
+    width: 30px; height: 30px; border-radius: 50%; border: 1px solid #d9e2ee;
+    background: #fff; color: #1d4ed8; font-size: 18px; cursor: pointer; line-height: 1;
+  }
+  #weekLabel { font-size: 14px; font-weight: 600; color: #24303d; min-width: 116px; text-align: center; }
+  .report-btn {
+    background: #2563eb; color: #fff; border: none; border-radius: 9px;
+    padding: 9px 13px; font-size: 13px; font-family: inherit; cursor: pointer;
+  }
+  .report-note { font-size: 11px; color: #8493a6; margin-top: 6px; }
+  .r-title { font-size: 15px; font-weight: 700; margin: 0 0 8px; }
+  .dim-row {
+    display: grid; grid-template-columns: minmax(64px, 1fr) auto auto; gap: 8px;
+    align-items: center; padding: 7px 0; border-bottom: 1px dashed #e8eef5; font-size: 13px;
+  }
+  .dim-row:last-child { border-bottom: none; }
+  .dim-row .dn { color: #3c4c60; }
+  .dim-avg { color: #24303d; font-weight: 600; }
+  .dim-avg small { color: #93a0b0; font-weight: normal; margin-left: 4px; }
+  .delta-tag {
+    display: inline-flex; align-items: center; border-radius: 999px; padding: 2px 9px;
+    font-size: 12px;
+  }
+  .delta-tag.up { background: #e8f7ee; color: #15803d; }
+  .delta-tag.down { background: #feecec; color: #dc2626; }
+  .delta-tag.flat { background: #f1f5f9; color: #64748b; }
+  .rev-card {
+    background: linear-gradient(135deg, #f6f9ff, #eef4ff);
+    border: 1px solid #dbe7ff;
+    border-radius: 12px;
+    padding: 12px;
+    margin-bottom: 10px;
+  }
+  .rev-head { display: flex; align-items: center; justify-content: space-between; font-size: 13px; }
+  .rev-head b { color: #1d4ed8; }
+  .rev-body { margin-top: 7px; font-size: 13px; color: #334155; white-space: pre-wrap; }
+  .rev-tag-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .rev-tag {
+    font-size: 12px; border-radius: 8px; padding: 5px 9px; background: #fff; border: 1px solid #e3ecf7;
+  }
+  .rev-tag b { display: block; font-size: 11px; color: #8a99a9; margin-bottom: 2px; }
+  .empty-week { text-align: center; color: #8493a6; font-size: 13px; padding: 18px 10px; }
+  .scoreline-p { color: #f59e0b; font-size: 15px; }
+  .scoreline-p .off { color: #d9e2ec; }
+  .media-strip { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 9px; }
+  .media-mini {
+    width: 62px; height: 62px; border-radius: 8px; overflow: hidden; position: relative;
+    border: 1px solid #e2e9f2; background: #eef2f7; cursor: pointer;
+  }
+  .media-mini img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .media-mini .v {
+    position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+    background: rgba(20, 30, 45, 0.35); color: #fff; font-size: 18px;
+  }
+  .media-mini .num {
+    position: absolute; right: 2px; bottom: 2px; background: rgba(0,0,0,.55); color: #fff;
+    font-size: 10px; padding: 0 5px; border-radius: 999px;
+  }
+  .chart-grid { display: flex; flex-direction: column; gap: 4px; }
+  .bar-pair { display: flex; align-items: flex-end; gap: 2px; height: 34px; }
+  .bar-pair i { flex: 1; border-radius: 3px 3px 0 0; min-height: 2px; }
+  .bar-pair i.prev { background: #c6d5e8; }
+  .bar-pair i.cur { background: linear-gradient(180deg, #6ea2ff, #2563eb); }
+  .legend { display: flex; gap: 14px; font-size: 11px; color: #8493a6; margin-top: 5px; }
+  .legend span { display: inline-flex; align-items: center; gap: 4px; }
+  .legend i { width: 12px; height: 6px; border-radius: 3px; display: inline-block; }
+  .lb-prev { background: #c6d5e8; }
+  .lb-cur { background: #2563eb; }
+  .lb { display: flex; gap: 8px; }
+  .lb .item { flex: 1; border: 1px solid #e3ecf7; border-radius: 9px; padding: 7px 9px; }
+  .lb .n { font-size: 17px; font-weight: 700; color: #1d4ed8; }
+  .lb .t { font-size: 11px; color: #7e8fa1; }
+  .lightbox-overlay {
+    position: fixed; inset: 0; background: rgba(10, 15, 24, 0.82); z-index: 500;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .lightbox-overlay[hidden] { display: none; }
+  .lbx-content { max-width: 100%; max-height: 100%; position: relative; }
+  .lbx-content img, .lbx-content video { max-width: 94vw; max-height: 80vh; border-radius: 10px; }
+  .lbx-close {
+    position: absolute; top: -38px; right: 0; border: none; background: rgba(255,255,255,.18);
+    color: #fff; width: 30px; height: 30px; border-radius: 50%; cursor: pointer;
+  }
+  .print-hint { background: #eef4ff; color: #1d4ed8; border: 1px solid #d6e4ff; font-size: 12px; border-radius: 9px; padding: 8px 10px; margin-bottom: 10px; }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <header class="header">
+    <div class="brand">
+      <div class="brand-mark">家</div>
+      <div>
+        <h1>家长端</h1>
+        <p>孩子的在校表现、每周成长一目了然</p>
+      </div>
+    </div>
+  </header>
+
+  <div class="content">
+    <div class="card">
+      <div class="child-select" id="childSelect" role="group" aria-label="选择孩子"></div>
+      <div class="sync-note" id="syncNote"></div>
+    </div>
+
+    <div class="seg" role="tablist">
+      <button class="active" id="viewFeedBtn" type="button">最新反馈</button>
+      <button id="viewWeeklyBtn" type="button">本周报告</button>
+    </div>
+
+    <div id="feedPanel">
+      <div class="card">
+        <div class="summary">
+          <span>共 <b id="totalCount">0</b> 条反馈</span>
+          <span>未读 <b id="unreadCount">0</b> 条</span>
+        </div>
+        <div style="height:9px"></div>
+        <div class="filter-row" id="filterRow"></div>
+      </div>
+
+      <div id="recordList"></div>
+      <div class="empty" id="emptyTip" hidden>暂时没有反馈记录</div>
+    </div>
+
+    <div id="weeklyPanel" hidden>
+      <div class="card">
+        <div class="week-head">
+          <div class="week-nav">
+            <button id="weekPrev" type="button" aria-label="上一周">‹</button>
+            <span id="weekLabel"></span>
+            <button id="weekNext" type="button" aria-label="下一周">›</button>
+          </div>
+          <button class="report-btn" id="reportBtn" type="button">生成 / 打印本周报告</button>
+        </div>
+        <div class="report-note">选择任一周可查看“老师周总评 + 各维度进退步 + 本周反馈明细”，报告可一键打印或另存为 PDF 留存。</div>
+      </div>
+      <div id="weeklyContent"></div>
+    </div>
+  </div>
+
+  <div class="foot">家长端演示 · 与老师端同一浏览器打开时可读取老师录入的反馈</div>
+</div>
+
+<a href="./index.html" style="position:fixed;right:14px;bottom:14px;z-index:999;background:#22303f;color:#fff;text-decoration:none;font-size:12px;padding:7px 12px;border-radius:999px;box-shadow:0 6px 18px rgba(15,30,50,.25);font-family:inherit">← 项目首页</a>
+
+<div class="lightbox-overlay" id="lightboxModal" hidden>
+  <div class="lbx-content">
+    <button class="lbx-close" id="lightboxClose" type="button">✕</button>
+    <div id="lightboxBody"></div>
+  </div>
+</div>
+
+<script>(function () {
+  "use strict";
+
+  var TEACHER_STUDENTS_KEY = "pfb_students";
+  var TEACHER_RECORDS_KEY = "pfb_records";
+  var REVIEW_KEY = "pfb_weekly_reviews";
+  var INTERACTIONS_KEY = "pfb_parent_interactions_v1";
+
+  var DIMENSIONS = [
+    { key: "attention", name: "专注力" },
+    { key: "participation", name: "参与表达" },
+    { key: "homework", name: "作业质量" },
+    { key: "behavior", name: "行为纪律" },
+    { key: "cooperation", name: "合作沟通" },
+    { key: "interest", name: "学习兴趣" }
+  ];
+
+  var CHILDREN = [
+    { id: "p1", name: "张子涵", cls: "三年级2班", studentId: "s11" },
+    { id: "p2", name: "周可欣", cls: "二年级1班", studentId: "s7" },
+    { id: "p3", name: "刘浩宇", cls: "四年级1班", studentId: "s16" }
+  ];
+
+  function pad2(n) { return String(n).padStart(2, "0"); }
+  function dateKey(d) { return d.getFullYear() + "-" + pad2(d.getMonth() + 1) + "-" + pad2(d.getDate()); }
+  function keyToDate(key) { var p = String(key).split("-").map(Number); return new Date(p[0], p[1] - 1, p[2]); }
+  function startOfWeek(d) {
+    var copy = (typeof d === "string") ? keyToDate(d) : new Date(d.getTime());
+    var day = copy.getDay() || 7;
+    copy.setDate(copy.getDate() - day + 1);
+    copy.setHours(0, 0, 0, 0);
+    return dateKey(copy);
+  }
+  function addDaysKey(key, num) {
+    var d = keyToDate(key);
+    d.setDate(d.getDate() + num);
+    return dateKey(d);
+  }
+  function fmtDateCN(key) {
+    var a = String(key || "").split("-");
+    return a.length === 3 ? (+a[1]) + "月" + (+a[2]) + "日" : "";
+  }
+  function recordTs(record) {
+    if (record && typeof record.ts === "number") return record.ts;
+    var text = record && record.createdAt ? record.createdAt : "";
+    var m = /^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})/.exec(text);
+    return m ? new Date(+m[1], +m[2] - 1, +m[3], +m[4], +m[5]).getTime() : 0;
+  }
+  function esc(str) {
+    return String(str == null ? "" : str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  }
+  function fmtAvg(v) { return v ? v.toFixed(1) : "-"; }
+
+  function buildFallbackRecords() {
+    var now = Date.now();
+    var sample = [
+      { cid: "p1", course: "语文", type: "学习表现", source: "班主任 王老师", content: "本周语文课能主动举手回答问题，朗读课文声音洪亮，作文有明显进步。", scores: { attention: 4, participation: 4, homework: 5, interest: 4 }, daysAgo: 0.4 },
+      { cid: "p1", course: "数学", type: "作业完成", source: "数学 李老师", content: "本周数学作业按时完成，应用题步骤完整，建议继续加强口算。", scores: { attention: 4, homework: 5 }, daysAgo: 1.2 },
+      { cid: "p1", course: "英语", type: "学习表现", source: "英语 陈老师", content: "英语课上能大胆开口朗读，单词掌握得不错。", scores: { attention: 4, participation: 5, interest: 4 }, daysAgo: 2.3 },
+      { cid: "p1", course: "语文", type: "课堂纪律", source: "班主任 王老师", content: "上周课堂偶尔走神，本周已改善，能跟上课堂节奏。", scores: { attention: 3, behavior: 4 }, daysAgo: 5.1 },
+      { cid: "p1", course: "数学", type: "作业完成", source: "数学 李老师", content: "上周作业有一次未及时订正，已提醒，希望这周保持。", scores: { homework: 3, behavior: 3 }, daysAgo: 8.2 },
+      { cid: "p2", course: "阅读", type: "学习表现", source: "阅读 王老师", content: "阅读课能完整朗读短文，说出故事大意，专注力有明显进步。", scores: { attention: 4, participation: 4, interest: 5 }, daysAgo: 0.3 },
+      { cid: "p2", course: "写作", type: "作业完成", source: "写作 李老师", content: "周末写作练习完成认真，句子通顺，用上了新学的好词好句。", scores: { attention: 4, homework: 4 }, daysAgo: 1.5 },
+      { cid: "p2", course: "古诗", type: "学习表现", source: "班主任 王老师", content: "能主动背诵两首古诗，站姿大方、声音响亮。", scores: { participation: 5, interest: 5 }, daysAgo: 4.8 },
+      { cid: "p2", course: "数学", type: "作业完成", source: "数学 李老师", content: "口算正确率较前一周提高，字迹也更工整。", scores: { attention: 4, homework: 4 }, daysAgo: 8.4 },
+      { cid: "p3", course: "英语", type: "学习表现", source: "英语 陈老师", content: "英语课上单词朗读比较熟练，敢于开口表达，建议每天听读十分钟。", scores: { attention: 3, participation: 4, interest: 4 }, daysAgo: 0.6 },
+      { cid: "p3", course: "语文", type: "课堂纪律", source: "班主任 王老师", content: "课堂上注意力有些不集中，容易走神，已和孩子沟通。", scores: { attention: 2, behavior: 3 }, daysAgo: 3.6 },
+      { cid: "p3", course: "数学", type: "行为习惯", source: "数学 李老师", content: "主动帮助同桌讲解错题，责任感有提升。", scores: { cooperation: 5, behavior: 4 }, daysAgo: 5.4 },
+      { cid: "p3", course: "英语", type: "课堂纪律", source: "英语 陈老师", content: "上周英语课玩文具被提醒，本周有所改善。", scores: { attention: 2, behavior: 2 }, daysAgo: 9.0 }
+    ];
+    return sample.map(function (item, index) {
+      var d = new Date(now - item.daysAgo * 864e5);
+      return {
+        id: "m" + (index + 1),
+        childId: item.cid,
+        course: item.course,
+        type: item.type,
+        source: item.source,
+        date: dateKey(d) + " " + pad2(d.getHours()) + ":" + pad2(d.getMinutes()),
+        ts: d.getTime(),
+        content: item.content,
+        scores: item.scores || {},
+        media: [],
+        reply: "",
+        replyAt: ""
+      };
+    });
+  }
+
+  function fallbackReviews() {
+    var curStart = startOfWeek(new Date());
+    var prevStart = addDaysKey(curStart, -7);
+    return [
+      { id: "wr1", childId: "p1", weekStart: curStart, overall: 4, summary: "本周整体表现良好，课堂上能主动举手，作业完成质量比上周更好，作文进步尤其明显。", strength: "课堂参与度提升，作业完成认真。", focus: "继续坚持每天阅读，数学注意审题。" },
+      { id: "wr1p", childId: "p1", weekStart: prevStart, overall: 3, summary: "上周整体中上，作业能按时完成，但课堂偶尔走神。", strength: "作业按时完成。", focus: "提升课堂专注力。" },
+      { id: "wr2", childId: "p2", weekStart: curStart, overall: 5, summary: "本周各科表现都非常积极，阅读和古诗背诵进步明显，是班里进步最大的同学之一。", strength: "表达自信，朗读响亮。", focus: "保持阅读，可尝试更长篇幅的文章。" },
+      { id: "wr2p", childId: "p2", weekStart: prevStart, overall: 4, summary: "上周学习状态稳定，书写较认真。", strength: "按时完成作业。", focus: "继续保持。" },
+      { id: "wr3", childId: "p3", weekStart: curStart, overall: 2, summary: "本周课堂专注度有所下降，英语和语文课均出现走神，希望家校共同关注。", strength: "乐于帮助同学。", focus: "减少分心，建立限时完成任务的习惯。" },
+      { id: "wr3p", childId: "p3", weekStart: prevStart, overall: 3, summary: "上周课堂纪律一般，有玩文具现象，已提醒。", strength: "作业基本完成。", focus: "加强专注力。" }
+    ];
+  }
+
+  var fallbackRecords = buildFallbackRecords();
+  var fallbackReviewList = fallbackReviews();
+  var shared = { ok: false, students: [], records: [], reviews: [] };
+  var interactions = loadInteractions();
+  var state = { childId: CHILDREN[0].id, filter: "全部", view: "feed", week: startOfWeek(new Date()) };
+  var openedReplyId = null;
+  var currentLightbox = null;
+
+  var els = {
+    syncNote: document.getElementById("syncNote"),
+    childSelect: document.getElementById("childSelect"),
+    filterRow: document.getElementById("filterRow"),
+    recordList: document.getElementById("recordList"),
+    emptyTip: document.getElementById("emptyTip"),
+    totalCount: document.getElementById("totalCount"),
+    unreadCount: document.getElementById("unreadCount"),
+    feedPanel: document.getElementById("feedPanel"),
+    weeklyPanel: document.getElementById("weeklyPanel"),
+    weeklyContent: document.getElementById("weeklyContent"),
+    weekLabel: document.getElementById("weekLabel"),
+    reportBtn: document.getElementById("reportBtn"),
+    viewFeedBtn: document.getElementById("viewFeedBtn"),
+    viewWeeklyBtn: document.getElementById("viewWeeklyBtn")
+  };
+
+  loadShared();
+  init();
+
+  function init() {
+    state.week = mostRecentWeekFor(state.childId);
+    renderSyncNote();
+    renderChildButtons();
+    renderView();
+    bind();
+  }
+
+  function bind() {
+    try {
+      window.addEventListener("storage", function (event) {
+        if ([TEACHER_STUDENTS_KEY, TEACHER_RECORDS_KEY, REVIEW_KEY].indexOf(event.key) > -1) {
+          loadShared();
+          renderSyncNote();
+          renderChildButtons();
+          renderAll();
+          if (state.view === "weekly") renderWeekly();
+        }
+      });
+    } catch (e) {}
+
+    els.viewFeedBtn.addEventListener("click", function () { state.view = "feed"; renderView(); });
+    els.viewWeeklyBtn.addEventListener("click", function () { state.view = "weekly"; renderView(); });
+    document.getElementById("weekPrev").addEventListener("click", function () {
+      state.week = addDaysKey(state.week, -7);
+      renderWeekly();
+    });
+    document.getElementById("weekNext").addEventListener("click", function () {
+      state.week = addDaysKey(state.week, 7);
+      renderWeekly();
+    });
+    els.reportBtn.addEventListener("click", generateReport);
+    document.getElementById("lightboxClose").addEventListener("click", function () {
+      document.getElementById("lightboxModal").hidden = true;
+    });
+    document.getElementById("lightboxModal").addEventListener("click", function (e) {
+      if (e.target === this) this.hidden = true;
+    });
+  }
+
+  function loadShared() {
+    try {
+      var studentsRaw = localStorage.getItem(TEACHER_STUDENTS_KEY);
+      var recordsRaw = localStorage.getItem(TEACHER_RECORDS_KEY);
+      var reviewRaw = localStorage.getItem(REVIEW_KEY);
+      var students = studentsRaw ? JSON.parse(studentsRaw) : [];
+      var records = recordsRaw ? JSON.parse(recordsRaw) : [];
+      var reviews = reviewRaw ? JSON.parse(reviewRaw) : [];
+      if (Array.isArray(students) && students.length && recordsRaw !== null && Array.isArray(records)) {
+        shared = { ok: true, students: students, records: records, reviews: Array.isArray(reviews) ? reviews : [] };
+        return;
+      }
+    } catch (e) {}
+    shared = { ok: false, students: [], records: [], reviews: [] };
+  }
+
+  function renderSyncNote() {
+    if (shared.ok) {
+      els.syncNote.className = "sync-note";
+      els.syncNote.textContent = "已连接老师端数据：反馈、照片视频与每周总评均来自老师录入。";
+    } else {
+      els.syncNote.className = "sync-note off";
+      els.syncNote.textContent = "未找到老师端数据，当前显示演示内容。请先在本电脑浏览器中打开老师端文件。";
+    }
+  }
+
+  function findChild(id) {
+    for (var i = 0; i < CHILDREN.length; i++) if (CHILDREN[i].id === id) return CHILDREN[i];
+    return CHILDREN[0];
+  }
+  function childName(child) {
+    if (shared.ok) {
+      for (var i = 0; i < shared.students.length; i++) {
+        if (shared.students[i].id === child.studentId) return shared.students[i].name;
+      }
+    }
+    return child.name;
+  }
+
+  function recordsOfChild(childId) {
+    var child = findChild(childId);
+    var list;
+    if (shared.ok) {
+      list = shared.records.filter(function (record) { return record.studentId === child.studentId; }).map(function (record) {
+        return {
+          id: "t_" + record.id,
+          sharedId: record.id,
+          childId: childId,
+          course: record.course || "不区分课程",
+          type: record.type || "其他",
+          source: record.source || "老师",
+          date: record.createdAt || "",
+          ts: recordTs(record),
+          content: record.content || "",
+          scores: record.scores || {},
+          media: Array.isArray(record.media) ? record.media : [],
+          reply: record.reply || "",
+          replyAt: record.replyAt || ""
+        };
+      });
+    } else {
+      list = fallbackRecords.filter(function (record) { return record.childId === childId; });
+    }
+    return list.sort(function (a, b) { return (b.ts || 0) - (a.ts || 0); });
+  }
+
+  function reviewsOfChild(childId) {
+    var child = findChild(childId);
+    var list;
+    if (shared.ok) {
+      list = shared.reviews.filter(function (r) { return r.studentId === child.studentId; }).map(function (r) {
+        return { childId: childId, weekStart: r.weekStart, overall: r.overall, summary: r.summary || "", strength: r.strength || "", focus: r.focus || "", author: r.author || "班主任" };
+      });
+    } else {
+      list = fallbackReviewList.filter(function (r) { return r.childId === childId; });
+    }
+    return list.sort(function (a, b) { return String(b.weekStart).localeCompare(String(a.weekStart)); });
+  }
+
+  function reviewFor(childId, weekStart) {
+    var list = reviewsOfChild(childId);
+    for (var i = 0; i < list.length; i++) if (list[i].weekStart === weekStart) return list[i];
+    return null;
+  }
+
+  function coursesOfChild(childId) {
+    var seen = {};
+    recordsOfChild(childId).forEach(function (record) { seen[record.course] = true; });
+    return Object.keys(seen);
+  }
+
+  function localItem(recordId) {
+    var childMap = interactions[state.childId] || {};
+    return childMap[recordId] || {};
+  }
+  function isRead(record) { return !!(localItem(record.id).read); }
+  function replyText(record) { return record.reply || localItem(record.id).reply || ""; }
+
+  function renderView() {
+    els.viewFeedBtn.classList.toggle("active", state.view === "feed");
+    els.viewWeeklyBtn.classList.toggle("active", state.view === "weekly");
+    els.feedPanel.hidden = state.view !== "feed";
+    els.weeklyPanel.hidden = state.view !== "weekly";
+    if (state.view === "feed") {
+      renderChildButtons();
+      renderFilters();
+      renderAll();
+    } else {
+      renderChildButtons();
+      renderWeekly();
+    }
+  }
+
+  function renderChildButtons() {
+    els.childSelect.innerHTML = "";
+    CHILDREN.forEach(function (child) {
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "child-btn" + (child.id === state.childId ? " active" : "");
+      btn.textContent = childName(child);
+      btn.addEventListener("click", function () {
+        state.childId = child.id;
+        state.filter = "全部";
+        state.week = mostRecentWeekFor(child.id);
+        openedReplyId = null;
+        renderView();
+      });
+      els.childSelect.appendChild(btn);
+    });
+  }
+
+  function mostRecentWeekFor(childId) {
+    var list = recordsOfChild(childId);
+    if (!list.length) return startOfWeek(new Date());
+    var latest = list[0];
+    return startOfWeek(latest.ts ? new Date(latest.ts) : new Date());
+  }
+
+  function renderFilters() {
+    els.filterRow.innerHTML = "";
+    ["全部"].concat(coursesOfChild(state.childId)).forEach(function (course) {
+      var chip = document.createElement("button");
+      chip.type = "button";
+      chip.className = "filter-chip" + (state.filter === course ? " active" : "");
+      chip.textContent = course;
+      chip.addEventListener("click", function () {
+        state.filter = course;
+        renderFilters();
+        renderAll();
+      });
+      els.filterRow.appendChild(chip);
+    });
+  }
+
+  function renderAll() {
+    var allRecords = recordsOfChild(state.childId);
+    var visibleRecords = allRecords.filter(function (record) {
+      return state.filter === "全部" || record.course === state.filter;
+    });
+    els.totalCount.textContent = allRecords.length;
+    els.unreadCount.textContent = allRecords.filter(function (record) { return !isRead(record); }).length;
+    els.recordList.innerHTML = "";
+    els.emptyTip.hidden = visibleRecords.length > 0;
+    visibleRecords.forEach(function (record) {
+      els.recordList.appendChild(buildRecordCard(record));
+    });
+  }
+
+  function buildRecordCard(record) {
+    var item = document.createElement("div");
+    item.className = "record" + (isRead(record) ? "" : " unread");
+
+    var top = document.createElement("div");
+    top.className = "record-top";
+    var courseTag = document.createElement("span");
+    courseTag.className = "tag course";
+    courseTag.textContent = record.course;
+    var typeTag = document.createElement("span");
+    typeTag.className = "tag";
+    typeTag.textContent = record.type;
+    var date = document.createElement("span");
+    date.className = "date";
+    date.textContent = record.date;
+    top.appendChild(courseTag);
+    top.appendChild(typeTag);
+    top.appendChild(date);
+    item.appendChild(top);
+
+    if (!isRead(record)) {
+      var unreadLine = document.createElement("div");
+      unreadLine.className = "record-source";
+      var dot = document.createElement("span");
+      dot.className = "unread-dot";
+      unreadLine.appendChild(dot);
+      unreadLine.appendChild(document.createTextNode("新反馈，请家长查看"));
+      item.appendChild(unreadLine);
+    }
+
+    var sc = record.scores || {};
+    var scoreKeys = DIMENSIONS.filter(function (d) { return sc[d.key]; });
+    if (scoreKeys.length) {
+      var chips = document.createElement("div");
+      chips.className = "record-source";
+      chips.style.cssText = "display:flex;flex-wrap:wrap;gap:6px;margin-top:7px";
+      scoreKeys.forEach(function (dim) {
+        var chip = document.createElement("span");
+        chip.className = "tag";
+        chip.textContent = dim.name + " " + sc[dim.key] + "分";
+        chip.style.cssText = "background:#eef4ff;color:#1d4ed8";
+        chips.appendChild(chip);
+      });
+      item.appendChild(chips);
+    }
+
+    var content = document.createElement("div");
+    content.className = "record-content";
+    content.textContent = record.content;
+    item.appendChild(content);
+
+    if (record.media && record.media.length) appendMediaStrip(item, record);
+
+    var source = document.createElement("div");
+    source.className = "record-source";
+    source.textContent = "反馈人：" + record.source;
+    item.appendChild(source);
+
+    var reply = replyText(record);
+    if (reply) {
+      var replyItem = document.createElement("div");
+      replyItem.className = "reply-item";
+      var replyTextDiv = document.createElement("div");
+      replyTextDiv.textContent = "我的回复：" + reply;
+      replyItem.appendChild(replyTextDiv);
+      if (record.replyAt) {
+        var replyTime = document.createElement("div");
+        replyTime.className = "time";
+        replyTime.textContent = record.replyAt;
+        replyItem.appendChild(replyTime);
+      }
+      item.appendChild(replyItem);
+    }
+
+    var actions = document.createElement("div");
+    actions.className = "actions";
+    if (isRead(record)) {
+      var doneBtn = document.createElement("button");
+      doneBtn.type = "button";
+      doneBtn.className = "btn done";
+      doneBtn.textContent = "已读";
+      doneBtn.disabled = true;
+      actions.appendChild(doneBtn);
+    } else {
+      var readBtn = document.createElement("button");
+      readBtn.type = "button";
+      readBtn.className = "btn primary";
+      readBtn.textContent = "标记已读";
+      readBtn.addEventListener("click", function () {
+        markRead(record);
+        renderView();
+      });
+      actions.appendChild(readBtn);
+    }
+
+    var replyBtn = document.createElement("button");
+    replyBtn.type = "button";
+    replyBtn.className = "btn ghost";
+    replyBtn.textContent = openedReplyId === record.id ? "收起回复" : (reply ? "修改回复" : "回复老师");
+    replyBtn.addEventListener("click", function () {
+      openedReplyId = openedReplyId === record.id ? null : record.id;
+      renderView();
+    });
+    actions.appendChild(replyBtn);
+    item.appendChild(actions);
+
+    if (openedReplyId === record.id) item.appendChild(buildReplyEditor(record));
+    return item;
+  }
+
+  function buildReplyEditor(record) {
+    var box = document.createElement("div");
+    box.className = "reply-box";
+    var textarea = document.createElement("textarea");
+    textarea.placeholder = "可以回复老师，例如：收到，会配合老师督促孩子。";
+    textarea.value = replyText(record);
+    box.appendChild(textarea);
+    var row = document.createElement("div");
+    row.className = "send-row";
+    var cancel = document.createElement("button");
+    cancel.type = "button";
+    cancel.className = "btn ghost";
+    cancel.textContent = "取消";
+    cancel.addEventListener("click", function () { openedReplyId = null; renderView(); });
+    var send = document.createElement("button");
+    send.type = "button";
+    send.className = "btn primary";
+    send.textContent = "发送回复";
+    send.addEventListener("click", function () {
+      var text = textarea.value.trim();
+      if (!text) return;
+      saveReply(record, text);
+      openedReplyId = null;
+      renderView();
+    });
+    row.appendChild(cancel);
+    row.appendChild(send);
+    box.appendChild(row);
+    return box;
+  }
+
+  function markRead(record) {
+    setLocalItem(record.id, { read: true });
+  }
+
+  function saveReply(record, text) {
+    setLocalItem(record.id, { read: true, reply: text });
+    if (!record.sharedId) return;
+    try {
+      var list = JSON.parse(localStorage.getItem(TEACHER_RECORDS_KEY));
+      if (!Array.isArray(list)) return;
+      var found = null;
+      for (var i = 0; i < list.length; i++) {
+        if (String(list[i].id) === String(record.sharedId)) {
+          found = list[i];
+          break;
+        }
+      }
+      if (found) {
+        found.reply = text;
+        found.replyAt = formatNow();
+        localStorage.setItem(TEACHER_RECORDS_KEY, JSON.stringify(list));
+      }
+    } catch (e) {}
+  }
+
+  function setLocalItem(recordId, patch) {
+    if (!interactions[state.childId]) interactions[state.childId] = {};
+    var current = interactions[state.childId][recordId] || {};
+    interactions[state.childId][recordId] = {
+      read: patch.read !== undefined ? patch.read : current.read,
+      reply: patch.reply !== undefined ? patch.reply : current.reply
+    };
+    saveInteractions();
+  }
+
+  function formatNow() {
+    var d = new Date();
+    return d.getFullYear() + "-" + pad2(d.getMonth() + 1) + "-" + pad2(d.getDate()) + " " + pad2(d.getHours()) + ":" + pad2(d.getMinutes());
+  }
+  function loadInteractions() {
+    try {
+      var raw = localStorage.getItem(INTERACTIONS_KEY);
+      return raw ? JSON.parse(raw) : {};
+    } catch (e) { return {}; }
+  }
+  function saveInteractions() {
+    try { localStorage.setItem(INTERACTIONS_KEY, JSON.stringify(interactions)); } catch (e) {}
+  }
+
+  /* ================= 素材展示 ================= */
+  function appendMediaStrip(item, record) {
+    var strip = document.createElement("div");
+    strip.className = "media-strip";
+    (record.media || []).forEach(function (m, index) {
+      var box = document.createElement("div");
+      box.className = "media-mini";
+      if (m.thumb) {
+        var img = document.createElement("img");
+        img.src = m.thumb;
+        box.appendChild(img);
+      }
+      if (m.kind === "video") {
+        var v = document.createElement("div");
+        v.className = "v";
+        v.textContent = "▶";
+        box.appendChild(v);
+      }
+      box.addEventListener("click", function () { openMedia(record, index); });
+      strip.appendChild(box);
+    });
+    item.appendChild(strip);
+  }
+
+  function openMedia(record, index) {
+    currentLightbox = { record: record, index: index };
+    document.getElementById("lightboxModal").hidden = false;
+    renderLightbox();
+  }
+
+  function renderLightbox() {
+    var body = document.getElementById("lightboxBody");
+    if (!currentLightbox) return;
+    var list = currentLightbox.record.media || [];
+    var m = list[currentLightbox.index];
+    if (!m) return;
+    body.innerHTML = '<div class="empty">加载中…</div>';
+    if (m.data) {
+      showMediaData(m.data);
+    } else {
+      getMediaUrl(m.id, function (url) {
+        showMediaData(url || m.thumb || "");
+      });
+    }
+    function showMediaData(url) {
+      if (!url) {
+        body.innerHTML = '<div class="empty">素材未能在本机保存，可能超过浏览器容量限制</div>';
+        return;
+      }
+      if (m.kind === "video") {
+        body.innerHTML = '<video controls src="' + url + '"></video>';
+      } else {
+        body.innerHTML = '<img src="' + url + '" alt="">';
+      }
+    }
+  }
+
+  var mediaDb = null;
+  var mediaDbFailed = false;
+  function openMediaDb(cb) {
+    if (mediaDb) { cb(true); return; }
+    if (mediaDbFailed || !("indexedDB" in window)) { cb(false); return; }
+    try {
+      var req = indexedDB.open("pfb_media_v1", 1);
+      req.onupgradeneeded = function () {
+        if (!req.result.objectStoreNames.contains("files")) req.result.createObjectStore("files");
+      };
+      req.onsuccess = function () { mediaDb = req.result; cb(true); };
+      req.onerror = function () { mediaDbFailed = true; cb(false); };
+    } catch (e) { mediaDbFailed = true; cb(false); }
+  }
+  function getMediaUrl(id, cb) {
+    try {
+      var local = localStorage.getItem("pfb_media_" + id);
+      if (local) { cb(local); return; }
+    } catch (e) {}
+    openMediaDb(function (ok) {
+      if (!ok || !mediaDb) { cb(""); return; }
+      try {
+        var tx = mediaDb.transaction("files", "readonly");
+        var req = tx.objectStore("files").get(id);
+        req.onsuccess = function () { cb(req.result ? req.result.data : ""); };
+        req.onerror = function () { cb(""); };
+      } catch (e) { cb(""); }
+    });
+  }
+
+  /* ================= 每周汇总与报告 ================= */
+  function recordsInWeek(childId, weekStart) {
+    var list = recordsOfChild(childId).filter(function (r) {
+      var wk = startOfWeek(r.ts ? new Date(r.ts) : new Date());
+      return wk === weekStart;
+    });
+    return list.sort(function (a, b) { return (b.ts || 0) - (a.ts || 0); });
+  }
+
+  function avgProfile(records) {
+    var byDim = {};
+    var total = 0;
+    var n = 0;
+    DIMENSIONS.forEach(function (dim) {
+      var sum = 0;
+      var cnt = 0;
+      records.forEach(function (r) {
+        var sc = r.scores || {};
+        if (typeof sc[dim.key] === "number" && sc[dim.key] > 0) {
+          sum += sc[dim.key];
+          cnt++;
+        }
+      });
+      byDim[dim.key] = { avg: cnt ? sum / cnt : 0, count: cnt };
+      total += sum;
+      n += cnt;
+    });
+    return { overall: n ? total / n : 0, n: n, byDim: byDim };
+  }
+
+  function renderWeekly() {
+    var child = findChild(state.childId);
+    var weekEnd = addDaysKey(state.week, 6);
+    els.weekLabel.textContent = fmtDateCN(state.week) + " — " + fmtDateCN(weekEnd);
+    var cur = recordsInWeek(state.childId, state.week);
+    var prev = recordsInWeek(state.childId, addDaysKey(state.week, -7));
+    var cp = avgProfile(cur);
+    var pp = avgProfile(prev);
+    var review = reviewFor(state.childId, state.week);
+    var childNameText = childName(child);
+    var html = "";
+
+    if (review) {
+      html += '<div class="rev-card"><div class="rev-head"><b>' + childNameText + ' 本周总体评价</b>' +
+        '<span class="scoreline-p">' + starHTML(review.overall) + '</span></div>' +
+        '<div class="rev-body">' + esc(review.summary || "老师还没有填写总体情况。") + '</div>' +
+        '<div class="rev-tag-row">' +
+        (review.strength ? '<span class="rev-tag"><b>亮点 / 进步</b>' + esc(review.strength) + '</span>' : '') +
+        (review.focus ? '<span class="rev-tag"><b>下周关注</b>' + esc(review.focus) + '</span>' : '') +
+        '</div></div>';
+    } else {
+      html += '<div class="rev-card"><div class="rev-head"><b>' + childNameText + ' 本周小结</b></div>' +
+        '<div class="rev-body">本周暂无老师总评。系统已按本周围绕评分的反馈自动生成量化小结，你也可以在下方查看每条反馈。</div></div>';
+    }
+
+    var deltaOverall = (cp.n && pp.n) ? cp.overall - pp.overall : null;
+    html += '<div class="card"><div class="dim-title">本周量化小结</div>' +
+      '<div class="lb">' +
+      '<div class="item"><div class="n">' + cur.length + '</div><div class="t">本周反馈</div></div>' +
+      '<div class="item"><div class="n">' + fmtAvg(cp.overall) + '</div><div class="t">本周均分</div></div>' +
+      '<div class="item"><div class="n" style="color:' + (deltaOverall == null ? "#1d4ed8" : deltaOverall >= -0.05 ? "#15803d" : "#dc2626") + '">' + (deltaOverall == null ? "—" : (deltaOverall > 0 ? "+" : "") + deltaOverall.toFixed(1)) + '</div><div class="t">较上周</div></div>' +
+      '</div>';
+
+    var typeMap = {};
+    cur.forEach(function (r) {
+      if (!typeMap[r.type]) typeMap[r.type] = 0;
+      typeMap[r.type]++;
+    });
+    var typeKeys = Object.keys(typeMap);
+    if (typeKeys.length) {
+      html += '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:10px">' + typeKeys.map(function (k) {
+        return '<span class="tag course">' + esc(k) + ' ' + typeMap[k] + ' 条</span>';
+      }).join("") + '</div>';
+    }
+
+    html += '<div style="margin-top:10px">' + DIMENSIONS.map(function (dim) {
+      var c = cp.byDim[dim.key];
+      var p = pp.byDim[dim.key];
+      var d = (c.count && p.count) ? c.avg - p.avg : null;
+      var tag = d == null ? '<span class="delta-tag flat">暂无对比</span>' : (d > 0.05 ? '<span class="delta-tag up">▲ 进步</span>' : (d < -0.05 ? '<span class="delta-tag down">▼ 退步</span>' : '<span class="delta-tag flat">持平</span>'));
+      var barH = Math.max(3, (c.count ? c.avg : 0) / 5 * 30);
+      var prevH = Math.max(3, (p.count ? p.avg : 0) / 5 * 30);
+      return '<div class="dim-row"><div class="dn">' + dim.name + '</div>' +
+        '<div style="display:flex;align-items:flex-end;gap:2px;height:32px"><i class="prev" style="height:' + prevH + 'px;width:13px;border-radius:3px 3px 0 0"></i><i class="cur" style="height:' + barH + 'px;width:13px;border-radius:3px 3px 0 0"></i></div>' +
+        '<div class="dim-avg">' + fmtAvg(c.avg) + '<small>' + c.count + '条</small>' + tag + '</div></div>';
+    }).join("") + '</div>' +
+      '<div class="legend"><span><i class="lb-cur"></i>本周</span><span><i class="lb-prev"></i>上周</span><span>绿色为进步，红色为退步</span></div></div>';
+
+    if (!cur.length) {
+      html += '<div class="card empty-week">这一周暂时没有反馈记录，可以切换到其他周查看。</div>';
+    } else {
+      html += '<div class="dim-title" style="padding:0 4px">本周反馈明细</div>';
+    }
+    els.weeklyContent.innerHTML = html;
+    if (cur.length) {
+      var frag = document.createDocumentFragment();
+      cur.forEach(function (record) {
+        frag.appendChild(buildRecordCard(record));
+      });
+      els.weeklyContent.appendChild(frag);
+    }
+  }
+
+  function starHTML(score) {
+    var s = "";
+    for (var i = 1; i <= 5; i++) s += i <= Math.round(score || 0) ? "★" : "<span class='off'>☆</span>";
+    return s;
+  }
+
+  function generateReport() {
+    var child = findChild(state.childId);
+    var childNameText = childName(child);
+    var weekEnd = addDaysKey(state.week, 6);
+    var cur = recordsInWeek(state.childId, state.week);
+    var prev = recordsInWeek(state.childId, addDaysKey(state.week, -7));
+    var cp = avgProfile(cur);
+    var pp = avgProfile(prev);
+    var review = reviewFor(state.childId, state.week);
+
+    var html = '<div class="report"><div class="r-head"><h1>学生每周成长报告</h1>' +
+      '<div>' + esc(childNameText) + ' · ' + esc(child.cls) + '</div>' +
+      '<div>周期：' + fmtDateCN(state.week) + ' 至 ' + fmtDateCN(weekEnd) + ' · 生成日期：' + formatNow() + '</div></div>';
+    html += '<div class="r-cards"><div class="rc"><div class="rl">本周反馈数</div><div class="rn">' + cur.length + '</div></div>' +
+      '<div class="rc"><div class="rl">本周平均分</div><div class="rn">' + fmtAvg(cp.overall) + '</div></div>' +
+      '<div class="rc"><div class="rl">上周平均分</div><div class="rn">' + fmtAvg(pp.overall) + '</div></div></div>';
+
+    if (review) {
+      html += '<h2>老师本周总体评价</h2><div class="r-review">' +
+        '<div>总体评级：<span class="scoreline-p">' + starHTML(review.overall) + '</span></div>' +
+        '<p>' + esc(review.summary || "") + '</p>' +
+        (review.strength ? '<p><b>亮点 / 进步：</b>' + esc(review.strength) + '</p>' : '') +
+        (review.focus ? '<p><b>下周关注：</b>' + esc(review.focus) + '</p>' : '') + '</div>';
+    }
+
+    html += '<h2>各维度进退步对比</h2><table><thead><tr><th>成长维度</th><th>上周均分</th><th>本周均分</th><th>变化</th></tr></thead><tbody>';
+    DIMENSIONS.forEach(function (dim) {
+      var c = cp.byDim[dim.key];
+      var p = pp.byDim[dim.key];
+      if (!c.count && !p.count) return;
+      var d = (c.count && p.count) ? c.avg - p.avg : null;
+      var txt = d == null ? "暂无对比" : (d > 0.05 ? "进步" : (d < -0.05 ? "退步" : "持平"));
+      html += '<tr><td>' + dim.name + '</td><td>' + fmtAvg(p.avg) + '</td><td>' + fmtAvg(c.avg) + '</td><td>' + txt + '</td></tr>';
+    });
+    html += '</tbody></table>';
+
+    html += '<h2>本周反馈记录</h2>';
+    if (!cur.length) {
+      html += '<p>本周暂无反馈。</p>';
+    }
+    cur.forEach(function (r) {
+      html += '<div class="r-record"><div class="rr-top">' + esc(r.course || "不区分课程") + ' · ' + esc(r.type || "") + ' · ' + esc(r.date || "") + '</div>' +
+        '<p>' + esc(r.content || "") + '</p>' +
+        (r.media && r.media.length ? '<div class="r-media">' + r.media.map(function (m) { return m.thumb ? '<img src="' + m.thumb + '">' : ''; }).join("") + '</div>' : '') + '</div>';
+    });
+    html += '<div class="r-note">本报告由家校反馈平台演示版自动生成，图片仅展示本机可访问的演示素材。请通过浏览器“打印 / 另存为 PDF”保存留存。</div></div>';
+
+    var win = window.open("", "_blank");
+    if (!win) {
+      alert("浏览器阻止了打印窗口，请允许弹出窗口后重试。");
+      return;
+    }
+    win.document.write('<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><title>' + esc(childNameText) + ' 周成长报告</title><style>' +
+      'body{font-family:"Microsoft YaHei","PingFang SC",sans-serif;color:#24303d;margin:0;background:#fff}' +
+      '.report{max-width:760px;margin:0 auto;padding:26px 32px}' +
+      '.r-head{border-bottom:2px solid #2563eb;padding-bottom:10px;margin-bottom:14px} .r-head h1{margin:0 0 5px;font-size:22px;color:#1e3a8a}' +
+      '.r-cards{display:flex;gap:10px;margin:12px 0} .rc{flex:1;border:1px solid #dbe5f0;border-radius:8px;padding:8px 12px;text-align:center} .rl{font-size:12px;color:#6b7a8c} .rn{font-size:22px;font-weight:700;color:#1d4ed8}' +
+      'h2{font-size:15px;margin:18px 0 8px;border-left:3px solid #2563eb;padding-left:8px}' +
+      '.r-review{border:1px solid #dbe5f0;border-radius:8px;padding:10px 12px;background:#f7faff}' +
+      'table{width:100%;border-collapse:collapse;font-size:13px;margin:8px 0} td,th{border:1px solid #dbe5f0;padding:6px 8px;text-align:left}' +
+      '.r-record{border:1px solid #dbe5f0;border-left:3px solid #2563eb;border-radius:6px;padding:8px 10px;margin-bottom:8px;page-break-inside:avoid}' +
+      '.rr-top{font-size:12px;color:#61758c;margin-bottom:3px} p{margin:3px 0;white-space:pre-wrap;word-break:break-word}' +
+      '.r-media img{width:74px;height:74px;object-fit:cover;border-radius:6px;margin:3px 3px 0 0}' +
+      '.r-note{margin-top:20px;font-size:11px;color:#98a5b3}' +
+      '.scoreline-p{color:#f59e0b} .off{color:#d9e2ec}' +
+      '@media print{body{print-color-adjust:exact;-webkit-print-color-adjust:exact}}' +
+      '</style></head><body>' + html + '<script>window.onload=function(){window.focus();setTimeout(function(){window.print();},300);};<\/script></body></html>');
+    win.document.close();
+  }
+})();
+
+</script>
+</body>
+</html>

@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>家校反馈平台 · 项目演示</title>
+<meta name="description" content="面向培训机构与中小学老师的家校反馈平台：量化成长评分、照片视频留痕、每周报告与打印。">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%232f6fed'/%3E%3Ctext x='32' y='43' font-size='34' text-anchor='middle' fill='white'%3E%E5%AE%B6%3C/text%3E%3C/svg%3E">
+<style>
+  :root {
+    --primary: #2f6fed;
+    --primary-dark: #1e55d6;
+    --ink: #22303f;
+    --muted: #6d7b8c;
+    --line: #e4ebf4;
+    --bg: #f4f7fb;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: "PingFang SC", "Microsoft YaHei", "Hiragino Sans GB", "Segoe UI", Arial, sans-serif;
+    color: var(--ink);
+    background: var(--bg);
+    line-height: 1.65;
+  }
+  .hero {
+    background: radial-gradient(1100px 420px at 15% -10%, #4d86ff 0%, transparent 60%),
+                linear-gradient(135deg, #2f6fed, #1b3fb0);
+    color: #fff;
+    padding: 62px 22px 74px;
+  }
+  .wrap { max-width: 1040px; margin: 0 auto; }
+  .badge {
+    display: inline-block;
+    font-size: 12px;
+    letter-spacing: 1.5px;
+    background: rgba(255,255,255,.16);
+    border: 1px solid rgba(255,255,255,.28);
+    padding: 5px 12px;
+    border-radius: 999px;
+    margin-bottom: 16px;
+  }
+  h1 { font-size: 34px; margin: 0 0 10px; letter-spacing: 1px; }
+  .hero p.lead { font-size: 16px; max-width: 620px; margin: 0 0 6px; color: rgba(255,255,255,.92); }
+  .hero p.sub { font-size: 13px; color: rgba(255,255,255,.72); margin: 14px 0 0; }
+  main { max-width: 1040px; margin: -44px auto 0; padding: 0 22px 48px; }
+  .entries { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  .entry {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 22px;
+    box-shadow: 0 10px 30px rgba(28, 45, 70, .08);
+    display: flex;
+    flex-direction: column;
+  }
+  .entry .tag {
+    align-self: flex-start;
+    font-size: 12px;
+    color: var(--primary-dark);
+    background: #eef4ff;
+    border-radius: 999px;
+    padding: 3px 10px;
+    margin-bottom: 10px;
+  }
+  .entry h2 { margin: 0 0 6px; font-size: 20px; }
+  .entry p { margin: 0 0 14px; color: var(--muted); font-size: 14px; }
+  .entry ul { margin: 0 0 18px; padding-left: 18px; color: #43536a; font-size: 14px; }
+  .entry li { margin-bottom: 4px; }
+  .btn {
+    display: inline-block;
+    text-align: center;
+    text-decoration: none;
+    background: var(--primary);
+    color: #fff;
+    padding: 11px 18px;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    margin-top: auto;
+  }
+  .btn:hover { background: var(--primary-dark); }
+  .btn.ghost { background: #fff; color: var(--primary-dark); border: 1px solid #c9dbfb; }
+  .btn.ghost:hover { background: #eef4ff; }
+  section.card {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 24px;
+    margin-top: 18px;
+  }
+  section.card h3 { margin: 0 0 14px; font-size: 17px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(215px, 1fr)); gap: 14px; }
+  .feature { border: 1px solid #eaf0f8; border-radius: 12px; padding: 14px 15px; background: #fafcff; }
+  .feature b { display: block; font-size: 14px; margin-bottom: 4px; }
+  .feature span { font-size: 13px; color: var(--muted); }
+  .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; counter-reset: s; }
+  .step { position: relative; padding-left: 42px; font-size: 14px; color: #43536a; }
+  .step::before {
+    counter-increment: s;
+    content: counter(s);
+    position: absolute; left: 0; top: 0;
+    width: 28px; height: 28px; border-radius: 50%;
+    background: var(--primary); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 700;
+  }
+  .notice {
+    background: #fff8ec;
+    border: 1px solid #f6e0b8;
+    color: #8a6116;
+    border-radius: 12px;
+    padding: 14px 16px;
+    font-size: 13px;
+    margin-top: 18px;
+  }
+  footer { text-align: center; color: #93a1b1; font-size: 12px; padding: 8px 20px 40px; }
+  @media (max-width: 760px) {
+    .entries { grid-template-columns: 1fr; }
+    h1 { font-size: 27px; }
+    .hero { padding: 48px 20px 64px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="wrap">
+    <span class="badge">项目作品 · 家校沟通方向</span>
+    <h1>家校反馈平台</h1>
+    <p class="lead">把老师每天“随口一说”的反馈，变成可量化、可追踪、可留存的成长记录。</p>
+    <p class="sub">老师端：量化评分 + 照片视频 + 全班进退步总览　|　家长端：每周成长报告 + 一键打印</p>
+  </div>
+</div>
+
+<main>
+  <div class="entries">
+    <div class="entry">
+      <span class="tag">老师端 / 管理端</span>
+      <h2>录入反馈与成长总览</h2>
+      <p>适合老师日常使用，也方便校长、教研或机构管理者查看整体情况。</p>
+      <ul>
+        <li>六个成长维度 1—5 分量化评价</li>
+        <li>反馈可附照片、短视频</li>
+        <li>全班 / 年级进退步总览与需关注名单</li>
+        <li>学生成长档案与每周总评</li>
+      </ul>
+      <a class="btn" href="./teacher.html">打开老师端演示</a>
+    </div>
+    <div class="entry">
+      <span class="tag">家长端 / 手机页面</span>
+      <h2>查看反馈与每周报告</h2>
+      <p>家长打开就能看到孩子的在校表现，一键生成可打印的周报告。</p>
+      <ul>
+        <li>未读提醒、回执与回复老师</li>
+        <li>老师上传的照片、视频直接查看</li>
+        <li>本周总评 + 各维度与上周对比</li>
+        <li>一键生成 / 打印本周报告</li>
+      </ul>
+      <a class="btn ghost" href="./parent.html">打开家长端演示</a>
+    </div>
+  </div>
+
+  <section class="card">
+    <h3>这个版本包含什么</h3>
+    <div class="grid">
+      <div class="feature"><b>成长量化</b><span>专注力、参与表达、作业质量、行为纪律、合作沟通、学习兴趣六维评分。</span></div>
+      <div class="feature"><b>进退步可视化</b><span>按周或最近 7 天自动对比，绿色表示进步、红色表示退步。</span></div>
+      <div class="feature"><b>素材留痕</b><span>反馈可附照片和短视频，家长端直接查看，删除反馈时一并清理。</span></div>
+      <div class="feature"><b>管理视角</b><span>按年级、班级查看整体情况，标出需关注学生，可导出报表。</span></div>
+      <div class="feature"><b>家长周报</b><span>老师周总评 + 量化小结 + 反馈明细，可打印或另存为 PDF。</span></div>
+      <div class="feature"><b>零成本演示</b><span>纯前端实现，无需后端即可完整演示产品流程。</span></div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h3>演示步骤</h3>
+    <div class="steps">
+      <div class="step">先在同一个浏览器里打开「老师端演示」，添加学生或使用内置演示数据，录入一条带评分、带照片的反馈。</div>
+      <div class="step">再打开「家长端演示」，切换到对应孩子，就能看到老师刚录入的反馈与素材。</div>
+      <div class="step">在家长端点「本周报告」，查看老师周总评与进退步对比，并一键生成可打印的报告。</div>
+    </div>
+    <div class="notice">
+      说明：这是用于作品展示的演示版，数据保存在当前浏览器本地，换设备或清理浏览器数据会重置。演示数据均为虚构，不含真实学生信息。
+    </div>
+  </section>
+</main>
+
+<footer>家校反馈平台 · 产品原型演示 · 2026</footer>
+
+</body>
+</html>
